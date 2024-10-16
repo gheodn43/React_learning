@@ -1,3 +1,43 @@
+.w-md-25, .w-md-50, .w-md-75{width: 100%;}
+@media (min-width: 576px) { /* sm */
+  .w-md-25, .w-md-50, .w-md-75{width: 100%;}
+}
+
+@media (min-width: 768px) { /* md */
+  .w-md-25{width: 25%;}
+  .w-md-50{width: 50%;}
+  .w-md-75{width: 75%;}
+}
+
+@media (min-width: 992px) { /* lg */
+  .w-md-25{width: 25%;}
+  .w-md-50{width: 50%;}
+  .w-md-75{width: 75%;}
+}
+
+@media (min-width: 1200px) { /* xl */
+  .w-md-25{width: 25%;}
+  .w-md-50{width: 50%;}
+  .w-md-75{width: 75%;}
+}
+
+@media (min-width: 1400px) { /* 2xl */
+  .w-md-25{width: 25%;}
+  .w-md-50{width: 50%;}
+  .w-md-75{width: 75%;}
+}
+
 .h-full{
   height: 100vh;
+}
+
+.input-cus{
+  padding: 0.5rem 1rem 0.5rem 1rem;
+  border: solid 1px
+}
+.label-cus{
+  top: -0.5rem;
+  left: 1rem;
+  padding: 0 0.5rem;
+  font-weight: 600;
 }

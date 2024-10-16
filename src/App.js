@@ -1,11 +1,11 @@
 import './App.css';
-import { ThemeProvider } from "./context/ThemeContext";
-import ParentComponent from "./components/ParentComponent";
+//import DataComponent from './components/DataComponent';
+import LandingPage from './components/lab02/LandingPage'; 
 function App() {
   return (
-    <ThemeProvider>
-        <ParentComponent />
-    </ThemeProvider>
+    <div className='bg-light min-vh-100'>
+      <LandingPage />
+    </div>
   );
 }
 
