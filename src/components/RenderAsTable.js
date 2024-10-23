@@ -1,4 +1,18 @@
-export default function RenderAsTable ({ data, showActionColumn, onClickUpdate, onClickDelete }){
+export default function RenderAsTable({ data, showActionColumn, onClickUpdate, onClickDelete }) {
+    const renderValue = (value) => {
+        if (typeof value === 'object' && !Array.isArray(value)) {
+            return Object.values(value).join(', ');
+        } else if (Array.isArray(value)) {
+            return value.map((item, index) => {
+                if (typeof item === 'object') {
+                    return Object.values(item).join(', ');
+                }
+                return item;
+            }).join('; ');
+        }
+        return value;
+    };
+
     return (
         <div className="table-responsive">
             <table className="table table-bordered">
@@ -13,8 +27,10 @@ export default function RenderAsTable ({ data, showActionColumn, onClickUpdate, 
                 <tbody>
                     {data.map((item, rowIndex) => (
                         <tr key={rowIndex}>
-                            {Object.values(item).map((value, colIndex) => (
-                                <td key={colIndex}>{value}</td>
+                            {Object.keys(item).map((key, colIndex) => (
+                                <td key={colIndex}>
+                                    {renderValue(item[key])}
+                                </td>
                             ))}
                             {showActionColumn && (
                                 <td>
@@ -39,4 +55,3 @@ export default function RenderAsTable ({ data, showActionColumn, onClickUpdate, 
         </div>
     );
 };
-

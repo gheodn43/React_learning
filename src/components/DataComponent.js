@@ -1,32 +1,32 @@
 import React, { useEffect, useReducer } from 'react';
-import { companies } from '../sharing/data';
+import { employees } from '../sharing/data';
 import RenderAsTable from './RenderAsTable';
 import CustomInput from '../utils/CustomInput.addform';
 import { INPUT_SIZE, INPUT_TYPE } from './InputSize';
 
 const initialState = {
     fieldNames: [],
-    companyData: [],
+    data: [],
     addFormData: {},
     updateFormData: {},
     isVisibleUpdateForm: false,
-    selectedCompany: null,
+    selectedData: null,
 };
 
 const reducer = (state, action) => {
     switch (action.type) {
         case 'SET_FIELD_NAMES':
             return { ...state, fieldNames: action.payload };
-        case 'SET_COMPANY_DATA':
-            return { ...state, companyData: action.payload };
+        case 'SET_DATA':
+            return { ...state, data: action.payload };
         case 'SET_ADD_FORM_DATA':
             return { ...state, addFormData: action.payload };
         case 'SET_UPDATE_FORM_DATA':
             return { ...state, updateFormData: action.payload };
         case 'SET_VISIBLE_UPDATE_FORM':
             return { ...state, isVisibleUpdateForm: action.payload };
-        case 'SET_SELECTED_COMPANY':
-            return { ...state, selectedCompany: action.payload };
+        case 'SET_SELECTED_DATA':
+            return { ...state, selectedData: action.payload };
         default:
             return state;
     }
@@ -36,9 +36,24 @@ export default function DataComponent() {
     const [state, dispatch] = useReducer(reducer, initialState);
 
     useEffect(() => {
-        if (companies.length > 0) {
-            dispatch({ type: 'SET_COMPANY_DATA', payload: companies });
-            const fields = Object.keys(companies[0]);
+        if (employees.length > 0) {
+            dispatch({ type: 'SET_DATA', payload: employees });
+            let fields = [];
+            Object.keys(employees[0]).forEach(field => {
+                if (field === 'address') {
+                    fields = fields.concat(Object.keys(employees[0][field]));
+                } else if (field === 'education') {
+                    if (employees[0][field].length > 0) {
+                        fields = fields.concat(Object.keys(employees[0][field][0]));
+                    }
+                } else if (field === 'workExperience') {
+                    if (employees[0][field].length > 0) {
+                        fields = fields.concat(Object.keys(employees[0][field][0]));
+                    }
+                } else if (typeof employees[0][field] !== 'object' || Array.isArray(employees[0][field])) {
+                    fields.push(field);
+                }
+            });
             dispatch({ type: 'SET_FIELD_NAMES', payload: fields });
 
             const initialAddFormData = {};
@@ -51,11 +66,11 @@ export default function DataComponent() {
 
     const handleUpdate = (item) => {
         dispatch({ type: 'SET_VISIBLE_UPDATE_FORM', payload: true });
-        dispatch({ type: 'SET_SELECTED_COMPANY', payload: item });
+        dispatch({ type: 'SET_SELECTED_DATA', payload: item });
 
         const initialUpdateFormData = {};
         Object.keys(item).forEach(field => {
-            if (field !== 'c_id') {
+            if (field !== 'id') {
                 initialUpdateFormData[field] = item[field];
             }
         });
@@ -63,13 +78,13 @@ export default function DataComponent() {
     };
 
     const handleDelete = (item) => {
-        const updatedCompanies = state.companyData.filter(company => company !== item);
-        dispatch({ type: 'SET_COMPANY_DATA', payload: updatedCompanies });
+        const updateDatas = state.data.filter(employee => employee !== item);
+        dispatch({ type: 'SET_DATA', payload: updateDatas });
     };
 
     const handleAddInputChange = (e) => {
         const { name, value } = e.target;
-        dispatch({ type: 'SET_ADD_FORM_DATA', payload: { ...state.addFormData, [name]: value }});
+        dispatch({ type: 'SET_ADD_FORM_DATA', payload: { ...state.addFormData, [name]: value } });
     };
 
     const handleUpdateInputChange = (e) => {
@@ -81,8 +96,8 @@ export default function DataComponent() {
     };
 
     const handleAdd = () => {
-        const updatedCompanies = [...state.companyData, state.addFormData];
-        dispatch({ type: 'SET_COMPANY_DATA', payload: updatedCompanies });
+        const updateDatas = [...state.data, state.addFormData];
+        dispatch({ type: 'SET_DATA', payload: updateDatas });
 
         const resetAddForm = {};
         state.fieldNames.forEach(field => {
@@ -92,13 +107,13 @@ export default function DataComponent() {
     };
 
     const handleUpdateSubmit = () => {
-        const index = state.companyData.findIndex(company => company.c_id === state.selectedCompany.c_id);
-        const updatedCompanies = [...state.companyData];
-        updatedCompanies[index] = { ...state.selectedCompany, ...state.updateFormData };
+        const index = state.data.findIndex(employee => employee.c_id === state.selectedData.c_id);
+        const updateDatas = [...state.data];
+        updateDatas[index] = { ...state.selectedData, ...state.updateFormData };
 
-        dispatch({ type: 'SET_COMPANY_DATA', payload: updatedCompanies });
+        dispatch({ type: 'SET_DATA', payload: updateDatas });
         dispatch({ type: 'SET_VISIBLE_UPDATE_FORM', payload: false });
-        dispatch({ type: 'SET_SELECTED_COMPANY', payload: null });
+        dispatch({ type: 'SET_SELECTED_DATA', payload: null });
     };
 
     const addFormInputs = state.fieldNames.length
@@ -106,29 +121,50 @@ export default function DataComponent() {
             { field: state.fieldNames[0], value: state.addFormData[state.fieldNames[0]], type: INPUT_TYPE.TEXT, size: INPUT_SIZE.SMALL },
             { field: state.fieldNames[1], value: state.addFormData[state.fieldNames[1]], type: INPUT_TYPE.TEXT, size: INPUT_SIZE.MEDIUM },
             { field: state.fieldNames[2], value: state.addFormData[state.fieldNames[2]], type: INPUT_TYPE.TEXT, size: INPUT_SIZE.SMALL },
-            { field: state.fieldNames[3], value: state.addFormData[state.fieldNames[3]], type: INPUT_TYPE.NUMBER, size: INPUT_SIZE.FULL },
+            { field: state.fieldNames[3], value: state.addFormData[state.fieldNames[3]], type: INPUT_TYPE.NUMBER, size: INPUT_SIZE.MEDIUM },
+            { field: state.fieldNames[4], value: state.addFormData[state.fieldNames[4]], type: INPUT_TYPE.TEXT, size: INPUT_SIZE.MEDIUM },
+
+            { field: state.fieldNames[5], value: state.addFormData[state.fieldNames[5]], type: INPUT_TYPE.TEXT, size: INPUT_SIZE.SMALL },
+            { field: state.fieldNames[6], value: state.addFormData[state.fieldNames[6]], type: INPUT_TYPE.TEXT, size: INPUT_SIZE.SMALL },
+            { field: state.fieldNames[7], value: state.addFormData[state.fieldNames[7]], type: INPUT_TYPE.TEXT, size: INPUT_SIZE.SMALL },
+            { field: state.fieldNames[8], value: state.addFormData[state.fieldNames[8]], type: INPUT_TYPE.TEXT, size: INPUT_SIZE.SMALL },
+
+            { field: state.fieldNames[9], value: state.addFormData[state.fieldNames[9]], type: INPUT_TYPE.TEXT, size: INPUT_SIZE.MEDIUM },
+            { field: state.fieldNames[10], value: state.addFormData[state.fieldNames[10]], type: INPUT_TYPE.TEXT, size: INPUT_SIZE.SMALL },
+            { field: state.fieldNames[11], value: state.addFormData[state.fieldNames[11]], type: INPUT_TYPE.NUMBER, size: INPUT_SIZE.SMALL },
+
         ]
         : [];
 
     const updateFormInputs = state.fieldNames.length
         ? [
-            { field: state.fieldNames[1], value: state.updateFormData[state.fieldNames[1]], type: INPUT_TYPE.TEXT, size: INPUT_SIZE.MEDIUM },
-            { field: state.fieldNames[2], value: state.updateFormData[state.fieldNames[2]], type: INPUT_TYPE.TEXT, size: INPUT_SIZE.MEDIUM },
-            { field: state.fieldNames[3], value: state.updateFormData[state.fieldNames[3]], type: INPUT_TYPE.NUMBER, size: INPUT_SIZE.FULL },
+            { field: state.fieldNames[1], value: state.addFormData[state.fieldNames[1]], type: INPUT_TYPE.TEXT, size: INPUT_SIZE.MEDIUM },
+            { field: state.fieldNames[2], value: state.addFormData[state.fieldNames[2]], type: INPUT_TYPE.TEXT, size: INPUT_SIZE.SMALL },
+            { field: state.fieldNames[3], value: state.addFormData[state.fieldNames[3]], type: INPUT_TYPE.NUMBER, size: INPUT_SIZE.MEDIUM },
+            { field: state.fieldNames[4], value: state.addFormData[state.fieldNames[4]], type: INPUT_TYPE.TEXT, size: INPUT_SIZE.MEDIUM },
+
+            { field: state.fieldNames[5], value: state.addFormData[state.fieldNames[5]], type: INPUT_TYPE.TEXT, size: INPUT_SIZE.SMALL },
+            { field: state.fieldNames[6], value: state.addFormData[state.fieldNames[6]], type: INPUT_TYPE.TEXT, size: INPUT_SIZE.SMALL },
+            { field: state.fieldNames[7], value: state.addFormData[state.fieldNames[7]], type: INPUT_TYPE.TEXT, size: INPUT_SIZE.SMALL },
+            { field: state.fieldNames[8], value: state.addFormData[state.fieldNames[8]], type: INPUT_TYPE.TEXT, size: INPUT_SIZE.SMALL },
+
+            { field: state.fieldNames[9], value: state.addFormData[state.fieldNames[9]], type: INPUT_TYPE.TEXT, size: INPUT_SIZE.MEDIUM },
+            { field: state.fieldNames[10], value: state.addFormData[state.fieldNames[10]], type: INPUT_TYPE.TEXT, size: INPUT_SIZE.SMALL },
+            { field: state.fieldNames[11], value: state.addFormData[state.fieldNames[11]], type: INPUT_TYPE.NUMBER, size: INPUT_SIZE.SMALL },
         ]
         : [];
 
     return (
         <div className="container mt-4">
-            <h2>Company Dashboard</h2>
+            <h2>Employees Dashboard</h2>
 
             <div className="mb-4">
-                <h4>Add Company</h4>
+                <h4>Add employee</h4>
                 {state.fieldNames.length > 0 && (
                     <CustomInput inputs={addFormInputs} handleChange={handleAddInputChange} />
                 )}
                 <div className='px-2'>
-                    <button type="button" className="btn btn-primary" onClick={handleAdd}> Add Company</button>
+                    <button type="button" className="btn btn-primary" onClick={handleAdd}> Add Employee</button>
                 </div>
             </div>
 
@@ -145,7 +181,7 @@ export default function DataComponent() {
                 </div>
             )}
             <RenderAsTable
-                data={state.companyData}
+                data={state.data}
                 showActionColumn={true}
                 onClickUpdate={handleUpdate}
                 onClickDelete={handleDelete}
